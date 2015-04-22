@@ -66,8 +66,16 @@ namespace CommandClientVisualStudioTest
         [TestMethod]
         public void TestUserExitCommandWithoutMocks()
         {
+            IPAddress ipaddress = IPAddress.Parse("127.0.0.1");
+            Command command = new Command(CommandType.UserExit, ipaddress, null);
+            MemoryStream fakeStream = new MemoryStream();
+            
+            CMDClient client = new CMDClient(null, "Bogus network name");
 
-            Assert.Fail("Not yet implemented");
+            // we need to set the private variable here
+            typeof(CMDClient).GetField("networkStream", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(client, fakeStream);
+
+            Assert.AreEqual(true, client.SendCommandToServerUnthreaded(command));       
         }
 
         [TestMethod]
@@ -80,7 +88,6 @@ namespace CommandClientVisualStudioTest
         public void TestSemaphoreReleaseOnExceptionalOperation()
         {
             Assert.Fail("Not yet implemented");
-
         }
     }
 }
