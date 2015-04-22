@@ -56,6 +56,7 @@ namespace CommandClientVisualStudioTest
             CMDClient client = new CMDClient(null, "Bogus network name");
             
             // we need to set the private variable here
+            typeof(CMDClient).GetField("networkStream", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(client, fakeStream);
 
             client.SendCommandToServerUnthreaded(command);
             mocks.VerifyAll();
@@ -65,6 +66,7 @@ namespace CommandClientVisualStudioTest
         [TestMethod]
         public void TestUserExitCommandWithoutMocks()
         {
+
             Assert.Fail("Not yet implemented");
         }
 
