@@ -68,14 +68,27 @@ namespace CommandClientVisualStudioTest
         {
             IPAddress ipaddress = IPAddress.Parse("127.0.0.1");
             Command command = new Command(CommandType.UserExit, ipaddress, null);
-            MemoryStream fakeStream = new MemoryStream();
-            
+            System.IO.Stream fakeStream = new MemoryStream();
+
+            byte[] commandBytes = { 0, 0, 0, 0 };
+            byte[] ipLength = { 9, 0, 0, 0 };
+            byte[] ip = { 49, 50, 55, 46, 48, 46, 48, 46, 49 };
+            byte[] metaDataLength = { 2, 0, 0, 0 };
+            byte[] metaData = { 10, 0 };
+
+            byte[] answer = {0, 0, 0, 0, 9, 0, 0, 0, 49, 50, 55, 46, 48, 46, 48, 46, 49, 2, 0, 0, 0, 10, 0};
+
             CMDClient client = new CMDClient(null, "Bogus network name");
 
             // we need to set the private variable here
             typeof(CMDClient).GetField("networkStream", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(client, fakeStream);
-
-            Assert.AreEqual(true, client.SendCommandToServerUnthreaded(command));       
+            client.SendCommandToServerUnthreaded(command);
+            MemoryStream stream = (MemoryStream)fakeStream;
+            byte[] actual = stream.ToArray();
+            for (int i = 0; i < actual.Length; i++)
+            {
+                Assert.AreEqual(answer[i], actual[i]);
+            }
         }
 
         [TestMethod]
